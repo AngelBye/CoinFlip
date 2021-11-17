@@ -2,6 +2,7 @@
 #define MAINSCENE_H
 
 #include <QMainWindow>
+#include "chooselevelscene.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainScene; }
@@ -17,6 +18,9 @@ public:
 
     //重写paintEvent事件 画背景图
     void paintEvent(QPaintEvent *);
+
+    //选择关卡场景对象
+    ChooseLevelScene* chooseScene=NULL;
 
 private:
     Ui::MainScene *ui;

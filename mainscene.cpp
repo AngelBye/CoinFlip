@@ -1,7 +1,9 @@
 #include "mainscene.h"
+#include "mypushbutton.h"
 #include "ui_mainscene.h"
 #include <QAction>
 #include <QPainter>
+#include <QTimer>
 
 MainScene::MainScene(QWidget *parent)
     : QMainWindow(parent)
@@ -22,6 +24,29 @@ MainScene::MainScene(QWidget *parent)
         this->close();
     });
 
+    //创建选择场景对象
+    chooseScene=new ChooseLevelScene;
+
+    //开始按钮
+    MyPushButton* startBtn=new MyPushButton(":/res/MenuSceneStartButton.png");
+    startBtn->setParent(this);
+    startBtn->move(this->width()*0.5-startBtn->width()*0.5,this->height()*0.7-startBtn->height()*0.7);
+    connect(startBtn,&MyPushButton::clicked,[=](){
+        //按钮弹跳特效
+        startBtn->zoomUp();
+        startBtn->zoomDown();
+
+        //延时进入到选择关卡场景中
+
+        QTimer::singleShot(500,this,[=](){
+            //_自身隐藏
+            this->hide();
+            //_显示选择关卡场景
+            chooseScene->show();
+        });
+
+
+    });
 }
 
 MainScene::~MainScene()
