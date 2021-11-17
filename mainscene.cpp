@@ -37,14 +37,23 @@ MainScene::MainScene(QWidget *parent)
         startBtn->zoomDown();
 
         //延时进入到选择关卡场景中
-
         QTimer::singleShot(500,this,[=](){
             //_自身隐藏
             this->hide();
             //_显示选择关卡场景
             chooseScene->show();
         });
+    });
 
+    //监听选择场景的返回信号
+    connect(chooseScene,&ChooseLevelScene::chooseSceneBack,this,[=](){
+        //延时进入到主场景中
+        QTimer::singleShot(500,this,[=](){
+            //_隐藏选择关卡场景
+            chooseScene->hide();
+            //_自身显示
+            this->show();
+        });
 
     });
 }
