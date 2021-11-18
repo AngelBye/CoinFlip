@@ -1,11 +1,15 @@
+#include "mycoin.h"
 #include "mypushbutton.h"
 #include "playscene.h"
+#include "dataconfig.h"
 #include <QAction>
 #include <QDebug>
 #include <QFont>
 #include <QLabel>
 #include <QMenuBar>
 #include <QPainter>
+#include <QPixmap>
+
 
 //PlayScene::PlayScene(QWidget *parent)
 //    : QMainWindow{parent}
@@ -19,6 +23,14 @@ PlayScene::PlayScene(int levelNum)
     this->levelIndex=levelNum;
     QString str=QString("进入了%1关").arg(levelNum);
     qDebug()<<str;
+
+    //初始化每个头卡的数组
+    DataConfig* dataConfig=new DataConfig;
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            gameArray[i][j]=dataConfig->mData[this->levelIndex][i][j];
+        }
+    }
 
     //初始化游戏场景
     //_设置固定大小
@@ -65,7 +77,36 @@ PlayScene::PlayScene(int levelNum)
     label->setText(levelStr);
     label->setGeometry(QRect(30,this->height()-50,120,50));
 
+    //显示金币背景图案
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            //_绘制背景图片
+            QPixmap pix=QPixmap(":/res/BoardNode.png");
+            QLabel* label=new QLabel;
+            label->setGeometry(0,0,pix.width(),pix.height());
+            label->setPixmap(pix);
+            label->setParent(this);
+            label->move(57+i*50,200+j*50);
 
+            //创建币
+            QString img;
+            if(gameArray[i][j]==1){
+            //_连接金币资源
+            img=":/res/Coin0001.png";
+            }
+            else{
+            //_连接银币资源
+            img=":/res/Coin0008.png";
+            }
+            MyCoin* coin=new MyCoin(img);
+            coin->setParent(this);
+            coin->move(59+i*50,204+j*50);
+            //_记录当前币的值
+            this->posX=i;
+            this->posY=j;
+            this->flag=gameArray[i][j];
+        }
+    }    
 }
 
 void PlayScene::paintEvent(QPaintEvent *)
