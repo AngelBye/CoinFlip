@@ -31,13 +31,17 @@ MainScene::MainScene(QWidget *parent)
     MyPushButton* startBtn=new MyPushButton(":/res/MenuSceneStartButton.png");
     startBtn->setParent(this);
     startBtn->move(this->width()*0.5-startBtn->width()*0.5,this->height()*0.7-startBtn->height()*0.7);
-    connect(startBtn,&MyPushButton::clicked,[=](){
+    connect(startBtn,&MyPushButton::clicked,this,[=](){
+
         //按钮弹跳特效
         startBtn->zoomUp();
         startBtn->zoomDown();
 
         //延时进入到选择关卡场景中
-        QTimer::singleShot(500,this,[=](){
+        QTimer::singleShot(500,this,[=]()
+        {
+            //_设置选择关卡场景的初始位置
+            chooseScene->setGeometry(this->geometry());
             //_自身隐藏
             this->hide();
             //_显示选择关卡场景
@@ -48,7 +52,10 @@ MainScene::MainScene(QWidget *parent)
     //监听选择场景的返回信号
     connect(chooseScene,&ChooseLevelScene::chooseSceneBack,this,[=](){
         //延时进入到主场景中
-        QTimer::singleShot(500,this,[=](){
+        QTimer::singleShot(500,this,[=]()
+        {
+            //_设置主菜单的场景初始位置
+            this->setGeometry(chooseScene->geometry());
             //_隐藏选择关卡场景
             chooseScene->hide();
             //_自身显示

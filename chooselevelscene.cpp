@@ -66,7 +66,10 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
             qDebug()<<str;
             playScene=new PlayScene(i+1);
             //进入到游戏场景
-            QTimer::singleShot(500,this,[=](){
+            QTimer::singleShot(500,this,[=]()
+            {
+                //_设置游戏场景初始位置
+                playScene->setGeometry(this->geometry());
                 //_隐藏自身
                 this->hide();
                 //_自身游戏场景
@@ -74,10 +77,13 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
                 //监听游戏场景的返回信号
                 connect(playScene,&PlayScene::chooseSceneBack,this,[=](){
                     //延时进入到选择场景中
-                    QTimer::singleShot(500,this,[=](){
-                        //_自身显示
-                        playScene->hide();
+                    QTimer::singleShot(500,this,[=]()
+                    {
+                        //_选择关卡位置初始化
+                        this->setGeometry(playScene->geometry());
                         //_隐藏选择关卡场景
+                        playScene->hide();
+                        //_自身显示
                         this->show();
                         //清除游戏场景
                         delete playScene;

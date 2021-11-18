@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPaintEvent>
+#include "mycoin.h"
 
 class PlayScene : public QMainWindow
 {
@@ -21,6 +22,11 @@ public:
     //二维数组，维护每关卡的具体数据
     int gameArray[4][4];
 
+    //维护每个关卡的具体数组
+    MyCoin * coinBtn[4][4];
+
+    //判断是否胜利
+    bool isWin=false;
 
 signals:
     void chooseSceneBack();

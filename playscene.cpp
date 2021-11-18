@@ -9,6 +9,7 @@
 #include <QMenuBar>
 #include <QPainter>
 #include <QPixmap>
+#include <QPropertyAnimation>
 
 
 //PlayScene::PlayScene(QWidget *parent)
@@ -77,10 +78,21 @@ PlayScene::PlayScene(int levelNum)
     label->setText(levelStr);
     label->setGeometry(QRect(30,this->height()-50,120,50));
 
-    //显示金币背景图案
-    for(int i=0;i<4;i++){
-        for(int j=0;j<4;j++){
-            //_绘制背景图片
+    //初始化胜利图片
+    QLabel* winLabel=new QLabel;
+    QPixmap tmpPix;
+    tmpPix.load(":/res/LevelCompletedDialogBg.png");
+    winLabel->setGeometry(0,0,tmpPix.width(),tmpPix.height());
+    winLabel->setPixmap(tmpPix);
+    winLabel->setParent(this);
+    winLabel->move((this->width()-tmpPix.width())*0.5,-tmpPix.height());
+
+    //生成硬币并实现
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            //绘制背景图片
             QPixmap pix=QPixmap(":/res/BoardNode.png");
             QLabel* label=new QLabel;
             label->setGeometry(0,0,pix.width(),pix.height());
@@ -90,7 +102,8 @@ PlayScene::PlayScene(int levelNum)
 
             //创建币
             QString img;
-            if(gameArray[i][j]==1){
+            if(gameArray[i][j]==1)
+            {
             //_连接金币资源
             img=":/res/Coin0001.png";
             }
@@ -105,9 +118,97 @@ PlayScene::PlayScene(int levelNum)
             coin->posX=i;
             coin->posY=j;
             coin->flag=gameArray[i][j];
-            //监听金币翻转动作
-            connect(coin,&MyCoin::clicked,this,[=](){
+            //_将金币放入到金币二维数组中方便后期维护
+            coinBtn[i][j]=coin;
+            //_监听金币翻转动作
+            connect(coin,&MyCoin::clicked,this,[=]()
+            {
+                //__翻硬币
                 coin->changeFlag();
+                this->gameArray[i][j]=this->gameArray[i][j]==0?1:0;
+                //__暂时禁止鼠标事件
+                for(int i=0;i<4;i++)
+                {
+                    for (int j=0;j<4 ;j++ )
+                    {
+                        //硬币对象的胜利标志为全设置为true，在MyCoin类中重写鼠标点击事件，并屏蔽事件。
+                        coinBtn[i][j]->isWinFlag=true;
+                    }
+                }
+                 //__翻转周围硬币
+                QTimer::singleShot(300,this,[=]()
+                {
+                    //___翻转右边硬币
+                    if(coin->posX+1<=3)
+                    {
+                        coinBtn[coin->posX+1][coin->posY]->changeFlag();
+                        this->gameArray[coin->posX+1][coin->posY]=this->gameArray[coin->posX+1][coin->posY]==0?1:0;
+                    }
+                    //___翻转左边硬币
+                    if(coin->posX-1>=0)
+                    {
+                        coinBtn[coin->posX-1][coin->posY]->changeFlag();
+                        this->gameArray[coin->posX-1][coin->posY]=this->gameArray[coin->posX-1][coin->posY]==0?1:0;
+                    }
+                    //___翻转下边硬币
+                    if(coin->posY+1<=3)
+                    {
+                        coinBtn[coin->posX][coin->posY+1]->changeFlag();
+                        this->gameArray[coin->posX][coin->posY+1]=this->gameArray[coin->posX][coin->posY+1]==0?1:0;
+                    }
+                    //___翻转下边硬币
+                    if(coin->posY-1>=0)
+                    {
+                        coinBtn[coin->posX][coin->posY-1]->changeFlag();
+                        this->gameArray[coin->posX][coin->posY-1]=this->gameArray[coin->posX][coin->posY-1]==0?1:0;
+                    }
+                    //___恢复鼠标事件
+                    for(int i=0;i<4;i++)
+                    {
+                        for (int j=0;j<4 ;j++ )
+                        {
+                            coinBtn[i][j]->isWinFlag=false;
+                        }
+                    }
+                    //___判断是否胜利
+                    this->isWin=true;
+                    for(int i=0;i<4;i++)
+                    {
+                        for (int j=0;j<4 ;j++ )
+                        {
+                            //只要有一个是反面，就算失败
+                            if(coinBtn[i][j]->flag==false)
+                            {
+                                this->isWin=false;
+                                break;
+                            };
+
+                        }
+                    }
+                    //___胜利后动作
+                    if(this->isWin==true)
+                    {
+                        //____胜利
+                        qDebug()<<"游戏胜利";
+                        for(int i=0;i<4;i++)
+                        {
+                            for (int j=0;j<4 ;j++ )
+                            {
+                                //硬币对象的胜利标志为全设置为true，在MyCoin类中重写鼠标点击事件，并屏蔽事件。
+                                coinBtn[i][j]->isWinFlag=true;
+                            }
+                        }
+                        //____胜利后将胜利图片下拉
+                        QPropertyAnimation* animation=new QPropertyAnimation(winLabel,"geometry");
+                        animation->setDuration(1000);
+                        animation->setStartValue(QRect(winLabel->x(),winLabel->y(),winLabel->width(),winLabel->height()));
+                        animation->setEndValue(QRect(winLabel->x(),winLabel->y()+180,winLabel->width(),winLabel->height()));
+                        animation->setEasingCurve(QEasingCurve::OutBounce);
+                        animation->start();
+                    }
+
+
+                });
             });
         }
     }    

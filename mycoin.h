@@ -3,6 +3,7 @@
 
 #include <QPushButton>
 #include <QTimer>
+#include <QEvent>
 
 class MyCoin : public QPushButton
 {
@@ -18,20 +19,25 @@ public:
     int posY;
     bool flag;
 
-    //改变标志，执行翻转效果
+    //翻转特效
+    //_改变标志，执行翻转效果
     void changeFlag();
-
-    //正面翻反面定时器
+    //_正面翻反面定时器
     QTimer* timerToReverse;
-
-    //反面翻正面定时器
+    //_反面翻正面定时器
     QTimer* timerToFront;
-
-    //动画最小画面
+    //_动画最小画面
     int min=1;
+    //_动画最大画面
+    int max=8;    
+    //_执行动画的标志
+    bool isAnimation=false;
 
-    //动画最大画面
-    int max=8;
+    //重写按下事件
+    void mousePressEvent(QMouseEvent* e);
+
+    //胜利标志
+    bool isWinFlag=false;
 
 signals:
 

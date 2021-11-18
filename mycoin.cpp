@@ -34,7 +34,8 @@ MyCoin::MyCoin(QString btnImg)
     timerToReverse=new QTimer(this);
     timerToFront=new QTimer(this);
     //_监听正面翻反面的信号，并翻转金币
-    connect(timerToReverse,&QTimer::timeout,this,[=](){
+    connect(timerToReverse,&QTimer::timeout,this,[=]()
+    {
         //__给按钮添加资源
         QPixmap pixAnimation;
         QString str=QString(":/res/Coin000%1.png").arg(this->min++);
@@ -48,11 +49,13 @@ MyCoin::MyCoin(QString btnImg)
         if(this->min>this->max)
         {
             this->min=1;
+            isAnimation=false;
             timerToReverse->stop();
         }
     });
     //_监听反面翻正面的信号，并翻转金币
-    connect(timerToFront,&QTimer::timeout,this,[=](){
+    connect(timerToFront,&QTimer::timeout,this,[=]()
+    {
         //__给按钮添加资源
         QPixmap pixAnimation;
         QString str=QString(":/res/Coin000%1.png").arg(this->max--);
@@ -66,6 +69,7 @@ MyCoin::MyCoin(QString btnImg)
         if(this->max<this->min)
         {
             this->max=8;
+            isAnimation=false;
             timerToFront->stop();
         }
     });
@@ -78,12 +82,26 @@ void MyCoin::changeFlag()
     if(this->flag)
     {
         timerToReverse->start(30);
+        isAnimation=true;
         this->flag=false;
     }
     //如果是反面执行下列代码
     else
     {
         timerToFront->start(30);
+        isAnimation=true;
         this->flag=true;
+    }
+}
+
+void MyCoin::mousePressEvent(QMouseEvent *e)
+{
+    if(this->isAnimation==true||this->isWinFlag==true)
+    {
+        return;
+    }
+    else
+    {
+        return QPushButton::mousePressEvent(e);
     }
 }
