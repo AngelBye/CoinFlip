@@ -102,9 +102,13 @@ PlayScene::PlayScene(int levelNum)
             coin->setParent(this);
             coin->move(59+i*50,204+j*50);
             //_记录当前币的值
-            this->posX=i;
-            this->posY=j;
-            this->flag=gameArray[i][j];
+            coin->posX=i;
+            coin->posY=j;
+            coin->flag=gameArray[i][j];
+            //监听金币翻转动作
+            connect(coin,&MyCoin::clicked,this,[=](){
+                coin->changeFlag();
+            });
         }
     }    
 }

@@ -21,10 +21,6 @@ public:
     //二维数组，维护每关卡的具体数据
     int gameArray[4][4];
 
-    //记录币的位置
-    int posX;
-    int posY;
-    bool flag;
 
 signals:
     void chooseSceneBack();
