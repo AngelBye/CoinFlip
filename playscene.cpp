@@ -10,6 +10,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPropertyAnimation>
+#include <QSound>
 
 
 //PlayScene::PlayScene(QWidget *parent)
@@ -20,6 +21,14 @@
 
 PlayScene::PlayScene(int levelNum)
 {
+    //初始化音效
+    //_初始化返回音效
+    QSound* backSound=new QSound(":/res/BackButtonSound.wav");
+    //_初始化翻金币的音效
+    QSound* flipSound=new QSound(":/res/ConFlipSound.wav");
+    //_初始化胜利的音效
+    QSound* winSound=new QSound(":/res/LevelWinSound.wav");
+
     //存储游戏关数
     this->levelIndex=levelNum;
     QString str=QString("进入了%1关").arg(levelNum);
@@ -61,6 +70,8 @@ PlayScene::PlayScene(int levelNum)
     closeBtn->move(this->width()-closeBtn->width(),this->height()-closeBtn->height());
     //_监听返回按钮
     connect(closeBtn,&MyPushButton::clicked,this,[=](){
+        //__返回按钮音效
+        backSound->play();
         this->hide();
         //__触发自定义信号，关闭自身。
         emit this->chooseSceneBack();
@@ -123,6 +134,8 @@ PlayScene::PlayScene(int levelNum)
             //_监听金币翻转动作
             connect(coin,&MyCoin::clicked,this,[=]()
             {
+                //__翻硬币音效
+                flipSound->play();
                 //__翻硬币
                 coin->changeFlag();
                 this->gameArray[i][j]=this->gameArray[i][j]==0?1:0;
@@ -141,24 +154,32 @@ PlayScene::PlayScene(int levelNum)
                     //___翻转右边硬币
                     if(coin->posX+1<=3)
                     {
+                        //__翻硬币音效
+                        flipSound->play();
                         coinBtn[coin->posX+1][coin->posY]->changeFlag();
                         this->gameArray[coin->posX+1][coin->posY]=this->gameArray[coin->posX+1][coin->posY]==0?1:0;
                     }
                     //___翻转左边硬币
                     if(coin->posX-1>=0)
                     {
+                        //__翻硬币音效
+                        flipSound->play();
                         coinBtn[coin->posX-1][coin->posY]->changeFlag();
                         this->gameArray[coin->posX-1][coin->posY]=this->gameArray[coin->posX-1][coin->posY]==0?1:0;
                     }
                     //___翻转下边硬币
                     if(coin->posY+1<=3)
                     {
+                        //__翻硬币音效
+                        flipSound->play();
                         coinBtn[coin->posX][coin->posY+1]->changeFlag();
                         this->gameArray[coin->posX][coin->posY+1]=this->gameArray[coin->posX][coin->posY+1]==0?1:0;
                     }
                     //___翻转下边硬币
                     if(coin->posY-1>=0)
                     {
+                        //__翻硬币音效
+                        flipSound->play();
                         coinBtn[coin->posX][coin->posY-1]->changeFlag();
                         this->gameArray[coin->posX][coin->posY-1]=this->gameArray[coin->posX][coin->posY-1]==0?1:0;
                     }
@@ -178,7 +199,7 @@ PlayScene::PlayScene(int levelNum)
                         {
                             //只要有一个是反面，就算失败
                             if(coinBtn[i][j]->flag==false)
-                            {
+                            {                                
                                 this->isWin=false;
                                 break;
                             };
@@ -188,6 +209,8 @@ PlayScene::PlayScene(int levelNum)
                     //___胜利后动作
                     if(this->isWin==true)
                     {
+                        //__胜利音效
+                        winSound->play();
                         //____胜利
                         qDebug()<<"游戏胜利";
                         for(int i=0;i<4;i++)

@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QTimer>
 #include <playscene.h>
+#include <QDebug>
+#include <QSound>
 
 ChooseLevelScene::ChooseLevelScene(QWidget *parent)
     : QMainWindow{parent}
@@ -17,6 +19,10 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
     this->setWindowIcon(QPixmap(":/res/Coin0001.png"));
     //_设置标题
     this->setWindowTitle("选择关卡场景");
+    //_初始化选择关卡音效
+    QSound* chooseSound=new QSound(":/res/TapButtonSound.wav");
+    //_初始化返回按钮音效
+    QSound* backSound=new QSound(":/res/BackButtonSound");
 
     //配置菜单
     //_创建菜单栏
@@ -38,6 +44,8 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
     backBtn->move(this->width()-backBtn->width(),this->height()-backBtn->height());
     //_监听返回按钮
     connect(backBtn,&MyPushButton::clicked,this,[=](){
+        //_返回音效
+        backSound->play();
        emit this->chooseSceneBack();
     });
 
@@ -68,6 +76,8 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
             //进入到游戏场景
             QTimer::singleShot(500,this,[=]()
             {
+                //_选择关卡音效
+                chooseSound->play();
                 //_设置游戏场景初始位置
                 playScene->setGeometry(this->geometry());
                 //_隐藏自身
@@ -92,14 +102,8 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent)
 
                 });
             });
-
-
         });
-
-
-
     }
-
 }
 
 void ChooseLevelScene::paintEvent(QPaintEvent *)

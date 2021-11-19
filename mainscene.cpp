@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QPainter>
 #include <QTimer>
+#include <QSound>
 
 MainScene::MainScene(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +19,8 @@ MainScene::MainScene(QWidget *parent)
     setWindowIcon(QIcon(":/res/Coin0001.png"));
     //_设置标题
     setWindowTitle("翻金币主场景");
+    //_设置音效
+    QSound* startSound=new QSound(":/res/TapButtonSound.wav");
 
     //退出按钮实现
     connect(ui->actionQuit,&QAction::triggered,this,[=](){
@@ -36,6 +39,9 @@ MainScene::MainScene(QWidget *parent)
         //按钮弹跳特效
         startBtn->zoomUp();
         startBtn->zoomDown();
+
+        //开始音效
+        startSound->play();
 
         //延时进入到选择关卡场景中
         QTimer::singleShot(500,this,[=]()
